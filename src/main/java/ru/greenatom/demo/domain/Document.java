@@ -12,6 +12,7 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "document")
 @Data
+@Deprecated
 public class Document {
     @Id
     @GeneratedValue(generator = "UUID")

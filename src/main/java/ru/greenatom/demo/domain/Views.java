@@ -1,5 +1,5 @@
 package ru.greenatom.demo.domain;
-
+@Deprecated
 public final class Views {
     public interface Id {}
 

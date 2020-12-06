@@ -11,6 +11,7 @@ import java.util.Set;
 
 @Entity
 @Table(name = "users")
+@Deprecated
 public class User implements UserDetails {
     @JsonView(Views.IdName.class)
     private String id;

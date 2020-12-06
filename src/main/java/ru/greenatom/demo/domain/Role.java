@@ -9,6 +9,7 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "role")
+@Deprecated
 public class Role implements GrantedAuthority {
     @JsonView(Views.Id.class)
     private String id;

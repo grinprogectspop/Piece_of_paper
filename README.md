@@ -1,7 +1,15 @@
 # Piece of paper
-# Piece of paper
-примечания
-1. создаём бд `pop` с учётной записью `username=root`, `password=root`
+Примечания:
+1. Создаём БД `pop` с учётной записью `username=root`, `password=root`.
+Создание пользователя root:
+
+  CREATE ROLE root LOGIN PASSWORD 'root';
+  CREATE DATABASE root;
+  ALTER DATABASE root OWNER TO root;
+
+Права суперпользователя для root:
+  ALTER USER root WITH SUPERUSER;
+  
 2. Файл для загрузки файлов создастся автоматически
 
 Внимание кто на linux надо проверить работает ли `file:///` для получения файлов.

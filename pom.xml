@@ -49,6 +49,7 @@
             <version>42.2.18</version>
         </dependency>
 
+
         <!--  util -->
 
         <dependency>
@@ -68,6 +69,12 @@
             <artifactId>spring-boot-devtools</artifactId>
             <version>2.4.0</version>
         </dependency>
+
+      <!-- Validation -->
+      <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-validation</artifactId>
+      </dependency>
 
 
         <!-- WEb -->

@@ -34,7 +34,7 @@ WARNING: All illegal access operations will be denied in a future release
 
 Использовать эти параметры:
 
-```properties
+```properties  
 --add-opens java.base/java.lang=ALL-UNNAMED 
 ```
 

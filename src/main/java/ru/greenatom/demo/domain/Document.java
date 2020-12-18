@@ -39,10 +39,10 @@ public class Document {
   @JsonView(Views.documents.class)
   private boolean deleted;
 
-//  @ElementCollection(targetClass = Action.class, fetch = FetchType.EAGER)
-//  @CollectionTable(name = "access", joinColumns = @JoinColumn(name = "document_id"))
-//  @Enumerated(EnumType.STRING)
-//  private Set<Action> accessTypes;
+  //  @ElementCollection(targetClass = Action.class, fetch = FetchType.EAGER)
+  //  @CollectionTable(name = "access", joinColumns = @JoinColumn(name = "document_id"))
+  //  @Enumerated(EnumType.STRING)
+  //  private Set<Action> accessTypes;
 
   @ManyToOne
   @JoinColumn(name = "document_type_id")
@@ -54,15 +54,15 @@ public class Document {
   private SecrecyLevel documentSecrecyLevel;
 
   @OneToMany(mappedBy = "document",
-          orphanRemoval = true,
-          cascade = CascadeType.ALL
+             orphanRemoval = true,
+             cascade = CascadeType.ALL
   )
   @JsonView(Views.documents.class)
   private Set<DocumentHistory> changes;
 
   @OneToMany(mappedBy = "document",
-          orphanRemoval = true,
-          cascade = CascadeType.ALL
+             orphanRemoval = true,
+             cascade = CascadeType.ALL
   )
   @JsonView(Views.documents.class)
   private Set<DocumentVersion> versions;

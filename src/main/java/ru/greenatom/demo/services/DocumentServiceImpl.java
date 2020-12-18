@@ -96,18 +96,24 @@ public class DocumentServiceImpl implements DocumentService {
         //Todo documentNew and documentNew не получается получить
         documentNew.setChanges(documentOld.getChanges());
         documentNew.setVersions(documentOld.getVersions());
+        documentNew.setDocumentName(documentOld.getDocumentName());
+
 
         DocumentVersion documentVersion = documentBuildingSaveModel.getVersionEdit();
 
         documentVersion.setDate(LocalDateTime.now());
         //Todo адекватный  URL
         documentVersion.setUrl("URL1");
+        documentVersion.setDocument(documentNew);
+        documentVersionRepo.save(documentVersion);
 
-        documentVersionRepo.save(documentBuildingSaveModel.getVersionEdit());
+
         DocumentHistory documentHistory = new DocumentHistory();
         documentHistory.setActionDate(LocalDateTime.now());
         documentHistory.setDocument(documentNew);
         documentHistory.setDescription("setDescription");
+        documentHistory.setAuthor(userRepo.findOneByUserId(documentBuildingSaveModel.getUserId()));
+        documentHistory.setDocumentVersion(documentVersion);
 
         documentNew.getChanges().add(documentHistory);
         documentHistoryRepo.save(documentHistory);
@@ -115,11 +121,12 @@ public class DocumentServiceImpl implements DocumentService {
 
         documentHistoryRepo.save(documentHistory);
         documentRepo.save(documentNew);
-        documentVersionRepo.save(documentVersion);
 
 
 
-        return null;
+
+
+        return documentNew;
     }
 
     @Override public Document delete(long documentId) {

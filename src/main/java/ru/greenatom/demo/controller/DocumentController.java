@@ -131,7 +131,6 @@ public class DocumentController {
     public Map<String, Object> save(@PathVariable String idDocument,
                                     @RequestBody @Valid DocumentBuildingSaveModel buildingSaveModel,
                                     BindingResult bindingResult) {
-        logger.info("DocumentBuildingSaveModel собрана:" + !bindingResult.hasErrors());
         Map<String, Object> strings = new HashMap<>();
         if (bindingResult.hasErrors()) {
             List<String> errors = new ArrayList<String>();
@@ -143,7 +142,7 @@ public class DocumentController {
             strings.put("error", errors);
             return strings;
         } else {
-            logger.info("documentBuildingCreateModel собрана:" + !bindingResult.hasErrors());
+            logger.info("DocumentBuildingSaveModel собрана:" + !bindingResult.hasErrors());
             strings.put("id", this.documentService.save(buildingSaveModel).getDocumentId());
             strings.put("versionDocument", this.documentService.save(buildingSaveModel).getVersions());
             return strings;

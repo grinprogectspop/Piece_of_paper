@@ -3,6 +3,7 @@ package ru.greenatom.demo.domain;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
@@ -15,7 +16,7 @@ import java.util.Set;
 @ToString(of = { "userId", "name" })
 @EqualsAndHashCode(of = { "userId" })
 @Table(name = "usr")
-public class User implements Serializable {
+public class User implements Serializable, UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long userId;
@@ -55,4 +56,55 @@ public class User implements Serializable {
 
     @OneToMany(mappedBy = "author")
     private Set<DocumentHistory> documentsChanges;
+
+    private boolean isAccountNonExpired;
+    private boolean isAccountNonLocked;
+    private boolean isEnabled;
+    private boolean isCredentialsNonExpired;
+
+    @Override
+    public Set<Role> getAuthorities() {
+        return this.roles;
+    }
+
+    @Override
+    public String getUsername() {
+        return this.name;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return this.isAccountNonExpired;
+    }
+
+    public void setAccountNonExpired(boolean accountNonExpired) {
+        isAccountNonExpired = accountNonExpired;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return this.isAccountNonLocked;
+    }
+
+    public void setAccountNonLocked(boolean accountNonLocked) {
+        isAccountNonLocked = accountNonLocked;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return this.isCredentialsNonExpired;
+    }
+
+    public void setCredentialsNonExpired(boolean credentialsNonExpired) {
+        isCredentialsNonExpired = credentialsNonExpired;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return this.isEnabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        isEnabled = enabled;
+    }
 }

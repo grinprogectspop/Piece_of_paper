@@ -14,6 +14,7 @@ public class DocumentType {
     private Long documentTypeId;
 
     @NotBlank
+
     private String documentTypeName;
 
     @OneToMany(mappedBy = "documentType")

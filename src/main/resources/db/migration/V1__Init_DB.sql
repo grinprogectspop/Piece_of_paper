@@ -19,6 +19,7 @@ create table document (
     password varchar(255),
     secrecy_level_id int8,
     document_type_id int8,
+
     primary key (document_id)
 );
 
@@ -72,6 +73,10 @@ create table user_role (
 
 create table usr (
      user_id int8 not null,
+     is_account_non_expired boolean not null,
+     is_account_non_locked boolean not null,
+     is_credentials_non_expired boolean not null,
+     is_enabled boolean not null,
      email varchar(255),
      name varchar(255),
      password varchar(255),

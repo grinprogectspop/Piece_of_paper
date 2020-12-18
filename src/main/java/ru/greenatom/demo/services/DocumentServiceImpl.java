@@ -60,7 +60,12 @@ public class DocumentServiceImpl implements DocumentService {
         documentHistory.setActionDate(LocalDateTime.now());
         documentHistory.setDocument(document);
         documentHistory.setDescription("setDescription");
+        documentHistory.setAuthor(userRepo.findOneByUserId(documentBuildingCreateModel.getUserId()));
+        Action action = Action.WRITE;
+
+        documentHistory.setActions(Collections.singleton(action));
         documentHistoryRepo.save(documentHistory);
+
 
 
         document.setChanges(Collections.singleton(documentHistory));
@@ -77,10 +82,8 @@ public class DocumentServiceImpl implements DocumentService {
 
         documentVersionRepo.save(documentVersion);
 
-        Action action = Action.WRITE;
 
-        documentHistory.setActions(Collections.singleton(action));
-
+        documentHistory.setDocumentVersion(documentVersion);
         documentHistoryRepo.save(documentHistory);
 
 

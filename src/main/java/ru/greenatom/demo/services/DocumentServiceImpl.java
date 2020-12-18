@@ -2,17 +2,17 @@ package ru.greenatom.demo.services;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
-import ru.greenatom.demo.domain.*;
+import ru.greenatom.demo.domain.Action;
+import ru.greenatom.demo.domain.Document;
+import ru.greenatom.demo.domain.DocumentHistory;
+import ru.greenatom.demo.domain.DocumentVersion;
 import ru.greenatom.demo.models.binding.DocumentBuildingCreateModel;
 import ru.greenatom.demo.models.binding.DocumentBuildingSaveModel;
 import ru.greenatom.demo.repo.*;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
-import java.util.Set;
-/**
- * сервер для работы с документом
- * **/
+
 @Service
 public class DocumentServiceImpl implements DocumentService {
     private final ModelMapper modelMapper;
@@ -38,99 +38,86 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override public Document crate(DocumentBuildingCreateModel documentBuildingCreateModel) {
-        Document document = new Document();
-        document.setDocumentName(documentBuildingCreateModel.getNameDocument());
+        //создание документа
+        Document document = this.modelMapper.map(documentBuildingCreateModel, Document.class);
         document.setCreationDate(LocalDateTime.now());
-        document.setPassword(documentBuildingCreateModel.getPassword());
 
-        //SecrecyLevel
-        SecrecyLevel secrecyLevel = new SecrecyLevel();
-        secrecyLevel.setSecrecyName("setSecrecyName");
-        secrecyLevel.setDocuments(Collections.singleton(document));
-        document.setDocumentSecrecyLevel(secrecyLevel);
 
-        //DocumentType
-        DocumentType documentType = new DocumentType();
-        documentType.setDocumentTypeName("setDocumentTypeName");
-        documentType.setDocuments(Collections.singleton(document));
-        document.setDocumentType(documentType);
+        //documentSecrecyLevel
+        document.getDocumentSecrecyLevel().setDocuments(Collections.singleton(document));
 
-        //History
+        secrecyLevelRepo.save(document.getDocumentSecrecyLevel());
+
+
+        //documentType
+        document.getDocumentType().setDocuments(Collections.singleton(document));
+
+        documentTypeRepo.save(document.getDocumentType());
+
+        documentRepo.save(document);
+        //changes
         DocumentHistory documentHistory = new DocumentHistory();
-        documentHistory.setDocument(document);
-        documentHistory.setActions(Set.of(Action.READ, Action.SAVE));
         documentHistory.setActionDate(LocalDateTime.now());
-        documentHistory.setAuthor(userRepo.findOneByUserId(documentBuildingCreateModel.getUserId()));
+        documentHistory.setDocument(document);
         documentHistory.setDescription("setDescription");
+        documentHistoryRepo.save(documentHistory);
+
+
         document.setChanges(Collections.singleton(documentHistory));
 
-        //Version
+
+        // DocumentVersion
         DocumentVersion documentVersion = new DocumentVersion();
-        documentVersion.setDocument(document);
-        documentVersion.setUrl("URL1");
-        documentVersion.setDate(LocalDateTime.now());
         documentVersion.setVersionName("0.0.0");
-        document.setVersions(Collections.singleton(documentVersion));
+        documentVersion.setDate(LocalDateTime.now());
+        //Todo адекватный  URL
+        documentVersion.setUrl("URL");
+        documentVersion.setDocument(document);
 
-        //Version and History
-        documentVersion.setDocumentChanges(Collections.singleton(documentHistory));
-        documentHistory.setDocumentVersion(documentVersion);
 
-        //Save
-        documentRepo.save(document);
-        secrecyLevelRepo.save(secrecyLevel);
-        documentTypeRepo.save(documentType);
-        documentHistoryRepo.save(documentHistory);
         documentVersionRepo.save(documentVersion);
 
+        Action action = Action.WRITE;
 
+        documentHistory.setActions(Collections.singleton(action));
 
+        documentHistoryRepo.save(documentHistory);
 
 
         return document;
     }
 
     @Override public Document save(DocumentBuildingSaveModel documentBuildingSaveModel) {
-        Document documentNew = documentRepo.findByDocumentId(documentBuildingSaveModel.getIdDocument());
+        Document documentNew = this.modelMapper.map(documentBuildingSaveModel, Document.class);
+        Document documentOld = documentRepo.findByDocumentId(documentBuildingSaveModel.getIdDocument());
+        //Todo documentNew and documentNew не получается получить
+        documentNew.setChanges(documentOld.getChanges());
+        documentNew.setVersions(documentOld.getVersions());
 
-        //History
-        DocumentHistory documentHistory = new DocumentHistory();
-        documentHistory.setDocument(documentNew);
-        documentHistory.setActionDate(LocalDateTime.now());
-        documentHistory.setActions(Set.of(Action.WRITE, Action.SAVE));
-        documentHistory.setDescription(documentBuildingSaveModel.getDescription());
-        documentHistory.setAuthor(userRepo.findOneByUserId(documentBuildingSaveModel.getUserId()));
-        documentHistory.setDocumentVersion(documentBuildingSaveModel.getVersionEdit());
-
-
-        //Version
         DocumentVersion documentVersion = documentBuildingSaveModel.getVersionEdit();
-        documentVersion.setDocument(documentNew);
+
         documentVersion.setDate(LocalDateTime.now());
-        documentVersion.setUrl("URL2");
+        //Todo адекватный  URL
+        documentVersion.setUrl("URL1");
 
-        documentVersion.setDocumentChanges(documentNew.getChanges());
-        documentVersion.getDocumentChanges().add(documentHistory);
-        documentHistory.setDocumentVersion(documentVersion);
-
+        documentVersionRepo.save(documentBuildingSaveModel.getVersionEdit());
+        DocumentHistory documentHistory = new DocumentHistory();
+        documentHistory.setActionDate(LocalDateTime.now());
+        documentHistory.setDocument(documentNew);
+        documentHistory.setDescription("setDescription");
 
         documentNew.getChanges().add(documentHistory);
-        documentNew.getVersions().add(documentVersion);
+        documentHistoryRepo.save(documentHistory);
+        documentHistory.setActions(Collections.singleton(Action.SAVE));
 
-
-        documentNew.setPassword(documentBuildingSaveModel.getPassword());
-
-
-
+        documentHistoryRepo.save(documentHistory);
         documentRepo.save(documentNew);
+        documentVersionRepo.save(documentVersion);
 
 
 
-
-
-        return documentNew;
+        return null;
     }
-
 
     @Override public Document delete(long documentId) {
         Document document = documentRepo.findByDocumentId(documentId);

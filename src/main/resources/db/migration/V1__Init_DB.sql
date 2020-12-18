@@ -19,6 +19,7 @@ create table document (
     password varchar(255),
     secrecy_level_id int8,
     document_type_id int8,
+
     primary key (document_id)
 );
 

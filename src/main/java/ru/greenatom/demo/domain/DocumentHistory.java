@@ -1,6 +1,7 @@
 package ru.greenatom.demo.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.Data;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -8,7 +9,7 @@ import java.time.LocalDateTime;
 import java.util.Set;
 
 @Entity
-
+@Data
 public class DocumentHistory {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -24,7 +25,7 @@ public class DocumentHistory {
     @JoinColumn(name = "user_id")
     private User author;
 
-    @ManyToOne( cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "document_id")
     private Document document;
 
@@ -36,60 +37,4 @@ public class DocumentHistory {
     @CollectionTable(name = "action", joinColumns = @JoinColumn(name = "document_history_id"))
     @Enumerated(EnumType.STRING)
     private Set<Action> actions;
-
-    public Long getDocumentHistoryId() {
-        return documentHistoryId;
-    }
-
-    public void setDocumentHistoryId(Long documentHistoryId) {
-        this.documentHistoryId = documentHistoryId;
-    }
-
-    public LocalDateTime getActionDate() {
-        return actionDate;
-    }
-
-    public void setActionDate(LocalDateTime actionDate) {
-        this.actionDate = actionDate;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public User getAuthor() {
-        return author;
-    }
-
-    public void setAuthor(User author) {
-        this.author = author;
-    }
-
-    public Document getDocument() {
-        return document;
-    }
-
-    public void setDocument(Document document) {
-        this.document = document;
-    }
-
-    public DocumentVersion getDocumentVersion() {
-        return documentVersion;
-    }
-
-    public void setDocumentVersion(DocumentVersion documentVersion) {
-        this.documentVersion = documentVersion;
-    }
-
-    public Set<Action> getActions() {
-        return actions;
-    }
-
-    public void setActions(Set<Action> actions) {
-        this.actions = actions;
-    }
 }

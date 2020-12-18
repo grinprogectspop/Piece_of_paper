@@ -1,5 +1,6 @@
 package ru.greenatom.demo.domain;
 
+import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -10,7 +11,7 @@ import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
 import java.util.Set;
 
-
+@Data
 @Entity
 @ToString(of = { "userId", "name" })
 @EqualsAndHashCode(of = { "userId" })
@@ -45,7 +46,7 @@ public class User implements Serializable, UserDetails {
     @Enumerated(EnumType.STRING)
     private Set<Action> accessTypes;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany
     @JoinTable(
       name = "user_position",
       joinColumns = @JoinColumn(name = "user_id"),
@@ -53,7 +54,7 @@ public class User implements Serializable, UserDetails {
     )
     private Set<Position> positions;
 
-    @OneToMany(mappedBy = "author",fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "author")
     private Set<DocumentHistory> documentsChanges;
 
     private boolean isAccountNonExpired;
@@ -105,86 +106,5 @@ public class User implements Serializable, UserDetails {
 
     public void setEnabled(boolean enabled) {
         isEnabled = enabled;
-    }
-
-
-    public Long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getSurname() {
-        return surname;
-    }
-
-    public void setSurname(String surname) {
-        this.surname = surname;
-    }
-
-    public String getPatronymic() {
-        return patronymic;
-    }
-
-    public void setPatronymic(String patronymic) {
-        this.patronymic = patronymic;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    @Override public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public Set<Role> getRoles() {
-        return roles;
-    }
-
-    public void setRoles(Set<Role> roles) {
-        this.roles = roles;
-    }
-
-    public Set<Action> getAccessTypes() {
-        return accessTypes;
-    }
-
-    public void setAccessTypes(Set<Action> accessTypes) {
-        this.accessTypes = accessTypes;
-    }
-
-    public Set<Position> getPositions() {
-        return positions;
-    }
-
-    public void setPositions(Set<Position> positions) {
-        this.positions = positions;
-    }
-
-    public Set<DocumentHistory> getDocumentsChanges() {
-        return documentsChanges;
-    }
-
-    public void setDocumentsChanges(Set<DocumentHistory> documentsChanges) {
-        this.documentsChanges = documentsChanges;
     }
 }

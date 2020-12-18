@@ -5,31 +5,23 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import ru.greenatom.demo.domain.Position;
 import ru.greenatom.demo.domain.User;
 import ru.greenatom.demo.models.binding.UserBuildingModel;
-import ru.greenatom.demo.repo.PositionRepo;
 import ru.greenatom.demo.repo.UserRepo;
 
-import java.util.Collections;
-/**
- * сервер для работы с пользователем
- * **/
 @Service
 public class UserServiceImpl implements UserService {
     private final ModelMapper modelMapper;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final UserRepo userRepo;
-    private final PositionRepo positionRepo;
 
     public UserServiceImpl(ModelMapper modelMapper,
                            BCryptPasswordEncoder bCryptPasswordEncoder,
-                           UserRepo userRepo, PositionRepo positionRepo) {
+                           UserRepo userRepo) {
         this.modelMapper = modelMapper;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
 
         this.userRepo = userRepo;
-        this.positionRepo = positionRepo;
     }
 
     @Override
@@ -41,14 +33,8 @@ public class UserServiceImpl implements UserService {
         userEntity.setCredentialsNonExpired(true);
         userEntity.setEnabled(true);
 
-        Position position = new Position();
-        position.setPositionName("test");
-
-
 
         this.userRepo.save(userEntity);
-        position.setUsers(Collections.singleton(userRepo.findOneByUserId(userEntity.getUserId())));
-        positionRepo.save(position);
         return userEntity.getUserId();
     }
 

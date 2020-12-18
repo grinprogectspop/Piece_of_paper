@@ -1,5 +1,7 @@
 package ru.greenatom.demo.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonView;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -17,25 +19,30 @@ import java.util.Set;
 public class Document {
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
+  @JsonView(Views.documents.class)
   private Long documentId;
 
   @NotBlank
+  @JsonView(Views.documents.class)
   private String documentName;
 
-  @NotBlank
+
+  @Column(updatable = false)
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+  @JsonView(Views.documents.class)
   private LocalDateTime creationDate;
 
   @NotBlank
   private String password;
 
-  @NotBlank
   @ColumnDefault(value = "false")
+  @JsonView(Views.documents.class)
   private boolean deleted;
 
-  @ElementCollection(targetClass = Action.class, fetch = FetchType.EAGER)
-  @CollectionTable(name = "access", joinColumns = @JoinColumn(name = "document_id"))
-  @Enumerated(EnumType.STRING)
-  private Set<Action> accessTypes;
+//  @ElementCollection(targetClass = Action.class, fetch = FetchType.EAGER)
+//  @CollectionTable(name = "access", joinColumns = @JoinColumn(name = "document_id"))
+//  @Enumerated(EnumType.STRING)
+//  private Set<Action> accessTypes;
 
   @ManyToOne
   @JoinColumn(name = "document_type_id")
@@ -43,17 +50,20 @@ public class Document {
 
   @ManyToOne
   @JoinColumn(name = "secrecy_level_id")
+  @JsonView(Views.documents.class)
   private SecrecyLevel documentSecrecyLevel;
 
   @OneToMany(mappedBy = "document",
           orphanRemoval = true,
           cascade = CascadeType.ALL
   )
+  @JsonView(Views.documents.class)
   private Set<DocumentHistory> changes;
 
   @OneToMany(mappedBy = "document",
           orphanRemoval = true,
           cascade = CascadeType.ALL
   )
+  @JsonView(Views.documents.class)
   private Set<DocumentVersion> versions;
 }

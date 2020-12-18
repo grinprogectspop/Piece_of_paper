@@ -1,5 +1,6 @@
 package ru.greenatom.demo.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -14,7 +15,7 @@ public class DocumentHistory {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long documentHistoryId;
 
-    @NotBlank
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime actionDate;
 
     @NotBlank

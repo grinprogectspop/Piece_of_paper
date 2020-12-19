@@ -1,7 +1,5 @@
 package ru.greenatom.demo.domain;
 
-import lombok.Data;
-
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import java.util.Set;

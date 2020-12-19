@@ -124,7 +124,8 @@ public class DocumentController {
     }
     /**
      * @param buildingSaveModel входной класс (Тело запроса)
-     * @param bindingResult проверяет documentBuildingCreateModel на корректность(хранит в себе ошибки при сборке и собран ли он )
+     * @param bindingResult проверяет documentBuildingCreateModel на корректность(хранит в себе
+     *                      ошибки при сборке и собран ли он )
      **/
     @PutMapping("/{idDocument}")
     @ResponseBody
@@ -142,9 +143,10 @@ public class DocumentController {
             strings.put("error", errors);
             return strings;
         } else {
+            Document document =this.documentService.save(buildingSaveModel);
             logger.info("DocumentBuildingSaveModel собрана:" + !bindingResult.hasErrors());
-            strings.put("id", this.documentService.save(buildingSaveModel).getDocumentId());
-            strings.put("versionDocument", this.documentService.save(buildingSaveModel).getVersions());
+            strings.put("id", document.getDocumentId());
+            strings.put("versionDocument",document.getDocumentId());
             return strings;
         }
     }

@@ -10,7 +10,9 @@ import ru.greenatom.demo.repo.*;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Set;
-
+/**
+ * сервер для работы с документом
+ * **/
 @Service
 public class DocumentServiceImpl implements DocumentService {
     private final ModelMapper modelMapper;
@@ -37,7 +39,7 @@ public class DocumentServiceImpl implements DocumentService {
 
     @Override public Document crate(DocumentBuildingCreateModel documentBuildingCreateModel) {
         Document document = new Document();
-        document.setDocumentName("setDocumentName");
+        document.setDocumentName(documentBuildingCreateModel.getNameDocument());
         document.setCreationDate(LocalDateTime.now());
         document.setPassword(documentBuildingCreateModel.getPassword());
 
@@ -89,10 +91,46 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override public Document save(DocumentBuildingSaveModel documentBuildingSaveModel) {
-        Document documentNew = new Document();
+        Document documentNew = documentRepo.findByDocumentId(documentBuildingSaveModel.getIdDocument());
+
+        //History
+        DocumentHistory documentHistory = new DocumentHistory();
+        documentHistory.setDocument(documentNew);
+        documentHistory.setActionDate(LocalDateTime.now());
+        documentHistory.setActions(Set.of(Action.WRITE, Action.SAVE));
+        documentHistory.setDescription(documentBuildingSaveModel.getDescription());
+        documentHistory.setAuthor(userRepo.findOneByUserId(documentBuildingSaveModel.getUserId()));
+        documentHistory.setDocumentVersion(documentBuildingSaveModel.getVersionEdit());
+
+
+        //Version
+        DocumentVersion documentVersion = documentBuildingSaveModel.getVersionEdit();
+        documentVersion.setDocument(documentNew);
+        documentVersion.setDate(LocalDateTime.now());
+        documentVersion.setUrl("URL2");
+
+        documentVersion.setDocumentChanges(documentNew.getChanges());
+        documentVersion.getDocumentChanges().add(documentHistory);
+        documentHistory.setDocumentVersion(documentVersion);
+
+
+        documentNew.getChanges().add(documentHistory);
+        documentNew.getVersions().add(documentVersion);
+
+
+        documentNew.setPassword(documentBuildingSaveModel.getPassword());
+
+
+
+        documentRepo.save(documentNew);
+
+
+
+
 
         return documentNew;
     }
+
 
     @Override public Document delete(long documentId) {
         Document document = documentRepo.findByDocumentId(documentId);

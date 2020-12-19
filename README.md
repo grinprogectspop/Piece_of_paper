@@ -1,6 +1,10 @@
 # Piece of paper
+1. [Примечания](#Примечания)
+2. [swagger](#swagger)
 
-Примечания:
+
+
+# Примечания
 
 1. Создаём БД `pop` с учётной записью `username=root`, `password=root`. Создание пользователя root:
 
@@ -22,7 +26,7 @@ ALTER USER root WITH SUPERUSER;
 
 # swagger
 
-Для избежания ошибки
+## Для избежания ошибок
 
 ```
 WARNING: An illegal reflective access operation has occurred
@@ -32,7 +36,7 @@ WARNING: Use --illegal-access=warn to enable warnings of further illegal reflect
 WARNING: All illegal access operations will be denied in a future release
 ```
 
-Использовать эти параметры:
+### Использовать эти параметры:
 
 ```properties  
 --add-opens java.base/java.lang=ALL-UNNAMED 

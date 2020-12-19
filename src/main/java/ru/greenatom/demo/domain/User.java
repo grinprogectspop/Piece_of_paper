@@ -1,6 +1,5 @@
 package ru.greenatom.demo.domain;
 
-import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -46,7 +45,7 @@ public class User implements Serializable, UserDetails {
     @Enumerated(EnumType.STRING)
     private Set<Action> accessTypes;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
       name = "user_position",
       joinColumns = @JoinColumn(name = "user_id"),
@@ -54,7 +53,7 @@ public class User implements Serializable, UserDetails {
     )
     private Set<Position> positions;
 
-    @OneToMany(mappedBy = "author")
+    @OneToMany(mappedBy = "author",fetch = FetchType.EAGER)
     private Set<DocumentHistory> documentsChanges;
 
     private boolean isAccountNonExpired;

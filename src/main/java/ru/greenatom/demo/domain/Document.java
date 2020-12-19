@@ -2,7 +2,6 @@ package ru.greenatom.demo.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonView;
-import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import org.hibernate.annotations.ColumnDefault;
@@ -43,11 +42,11 @@ public class Document {
   //  @Enumerated(EnumType.STRING)
   //  private Set<Action> accessTypes;
 
-  @ManyToOne
+  @ManyToOne(cascade = CascadeType.PERSIST)
   @JoinColumn(name = "document_type_id")
   private DocumentType documentType;
 
-  @ManyToOne
+  @ManyToOne(cascade = CascadeType.PERSIST)
   @JoinColumn(name = "secrecy_level_id")
   @JsonView(Views.documents.class)
   private SecrecyLevel documentSecrecyLevel;
@@ -62,6 +61,7 @@ public class Document {
 
   @OneToMany(mappedBy = "document",
              orphanRemoval = true,
+             fetch = FetchType.EAGER,
              cascade = CascadeType.ALL
   )
   @JsonView(Views.documents.class)
@@ -138,4 +138,5 @@ public class Document {
   public void setVersions(Set<DocumentVersion> versions) {
     this.versions = versions;
   }
+
 }

@@ -1,20 +1,16 @@
 package ru.greenatom.demo.domain;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import lombok.Data;
 
 import javax.persistence.*;
-import javax.transaction.Transactional;
 import javax.validation.constraints.NotBlank;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Set;
 
 @Entity
 
-public class DocumentVersion {
+public class DocumentVersion implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long documentVersionId;

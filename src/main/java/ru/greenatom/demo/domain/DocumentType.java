@@ -1,7 +1,5 @@
 package ru.greenatom.demo.domain;
 
-import lombok.Data;
-
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import java.util.Set;
@@ -17,7 +15,7 @@ public class DocumentType {
 
     private String documentTypeName;
 
-    @OneToMany(mappedBy = "documentType")
+    @OneToMany(mappedBy = "documentType", cascade = CascadeType.ALL)
     private Set<Document> documents;
 
     public Long getDocumentTypeId() {

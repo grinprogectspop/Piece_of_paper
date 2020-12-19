@@ -28,13 +28,13 @@ public class DocumentVersion implements Serializable {
     @OneToMany(
             mappedBy = "documentVersion",
             orphanRemoval = true,
-            fetch = FetchType.LAZY,
+            fetch = FetchType.EAGER,
             cascade = CascadeType.ALL
     )
 
     private Set<DocumentHistory> documentChanges;
 
-    @ManyToOne
+    @ManyToOne( cascade = CascadeType.MERGE )
     @JoinColumn(name = "document_id")
     private Document document;
 

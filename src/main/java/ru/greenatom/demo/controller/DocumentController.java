@@ -115,12 +115,10 @@ public class DocumentController {
 
     }
 
-    @GetMapping("/{idDocument}")
+    @PutMapping("/delete/{idDocument}")
     @ResponseBody
-    public long getDocumentDelete(@PathVariable String idDocument) {
-
-
-        return documentService.delete(Long.parseLong(idDocument)).getDocumentId();
+    public Document delete(@PathVariable String idDocument) {
+        return documentService.delete(Long.parseLong(idDocument));
     }
     /**
      * @param buildingSaveModel входной класс (Тело запроса)

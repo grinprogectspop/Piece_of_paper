@@ -44,8 +44,6 @@ public class UserServiceImpl implements UserService {
         Position position = new Position();
         position.setPositionName("test");
 
-
-
         this.userRepo.save(userEntity);
         position.setUsers(Collections.singleton(userRepo.findOneByUserId(userEntity.getUserId())));
         positionRepo.save(position);

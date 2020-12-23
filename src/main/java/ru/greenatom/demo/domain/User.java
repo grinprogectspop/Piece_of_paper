@@ -56,6 +56,7 @@ public class User implements Serializable, UserDetails {
     @OneToMany(mappedBy = "author",fetch = FetchType.EAGER)
     private Set<DocumentHistory> documentsChanges;
 
+
     private boolean isAccountNonExpired;
     private boolean isAccountNonLocked;
     private boolean isEnabled;

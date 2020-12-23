@@ -72,11 +72,11 @@ create table user_role (
 
 create table usr (
      user_id int8 not null,
+     email varchar(255),
      is_account_non_expired boolean not null,
      is_account_non_locked boolean not null,
      is_credentials_non_expired boolean not null,
      is_enabled boolean not null,
-     email varchar(255),
      name varchar(255),
      password varchar(255),
      patronymic varchar(255),

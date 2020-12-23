@@ -107,10 +107,11 @@ public class DocumentController {
         return document;
     }
 
-    @GetMapping("/{documentId}")
+    @PutMapping("/delete/{idDocument}")
     @ResponseBody
-    public long getDocumentDelete(@PathVariable String documentId) {
-        return documentService.delete(Long.parseLong(documentId)).getDocumentId();
+    public Document delete(@PathVariable String idDocument) {
+        return documentService.delete(Long.parseLong(idDocument));
+
     }
 
     /**

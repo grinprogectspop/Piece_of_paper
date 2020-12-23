@@ -1,4 +1,4 @@
-package ru.greenatom.demo.models.binding.validations;
+package ru.greenatom.demo.validation;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;
@@ -8,10 +8,10 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
-@Constraint(validatedBy = IsPasswordMatchingValidator.class)
-public @interface IsPasswordMatching {
-    String message() default "Passwords Not Matching";
+@Target(ElementType.FIELD)
+@Constraint(validatedBy = IsEmailRegisteredValidator.class)
+public @interface IsEmailRegistered {
+    String message() default "Электронная почта уже зарегистрирована";
 
     Class<?>[] groups() default {};
 

@@ -5,7 +5,6 @@ import javax.validation.constraints.NotBlank;
 import java.util.Set;
 
 @Entity
-
 public class SecrecyLevel {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

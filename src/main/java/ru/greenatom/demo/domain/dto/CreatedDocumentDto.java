@@ -1,30 +1,32 @@
-package ru.greenatom.demo.models.binding;
+package ru.greenatom.demo.domain.dto;
 
 import lombok.Data;
 import ru.greenatom.demo.domain.DocumentType;
 import ru.greenatom.demo.domain.SecrecyLevel;
-import ru.greenatom.demo.models.binding.validations.IsPasswordMatching;
+import ru.greenatom.demo.validation.IsPasswordMatching;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 @Data
 @IsPasswordMatching
-public class DocumentBuildingCreateModel {
-
-    @NotNull
+public class CreatedDocumentDto {
+    @NotBlank
     private long userId;
 
     @Size(min = 4, max = 100, message = "Имя документа должно быть от 4 до 100 символов")
-    private String nameDocument;
+    private String documentName;
+
     private SecrecyLevel secrecyLevel;
+
     private DocumentType documentType;
 
-    //Todo сделать не обязательным
+    // TODO: сделать не обязательным
     @Size(min = 4, max = 30, message = "Пароль должен быть от 4 до 30 символов")
     private String password;
 
-    //Todo сделать не обязательным
+    // TODO: сделать не обязательным
     @Size(min = 4, max = 30, message = "Пароль должен быть от 4 до 30 символов")
     private String confirmPassword;
 }

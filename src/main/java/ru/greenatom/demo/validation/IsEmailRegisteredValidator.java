@@ -1,4 +1,4 @@
-package ru.greenatom.demo.models.binding.validations;
+package ru.greenatom.demo.validation;
 
 
 

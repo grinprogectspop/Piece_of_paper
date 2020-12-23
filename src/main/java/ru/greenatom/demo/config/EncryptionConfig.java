@@ -8,8 +8,7 @@ import org.thymeleaf.extras.springsecurity4.dialect.SpringSecurityDialect;
 
 @Configuration
 public class EncryptionConfig {
-
-    // для конвертации классов
+    // Class converting
     @Bean
     public ModelMapper modelMapper() {
         return new ModelMapper();
@@ -19,11 +18,9 @@ public class EncryptionConfig {
     public SpringSecurityDialect springSecurityDialect() {
         return new SpringSecurityDialect();
     }
-    //шифрование паролей (Ps пока-что только на user)
+    // Used only for User
     @Bean
     public BCryptPasswordEncoder getBCryptPasswordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
-
 }

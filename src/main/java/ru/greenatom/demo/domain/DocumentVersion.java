@@ -1,6 +1,7 @@
 package ru.greenatom.demo.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -16,8 +17,8 @@ public class DocumentVersion implements Serializable {
     private Long documentVersionId;
 
     @NotBlank
+    @ColumnDefault(value = "0.0.1")
     private String versionName;
-
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime date;

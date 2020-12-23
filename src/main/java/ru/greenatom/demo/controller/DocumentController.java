@@ -11,10 +11,10 @@ import ru.greenatom.demo.domain.Document;
 import ru.greenatom.demo.domain.DocumentType;
 import ru.greenatom.demo.domain.SecrecyLevel;
 import ru.greenatom.demo.domain.Views;
-import ru.greenatom.demo.models.binding.DocumentBuildingCreateModel;
-import ru.greenatom.demo.models.binding.DocumentBuildingSaveModel;
+import ru.greenatom.demo.domain.dto.CreatedDocumentDto;
+import ru.greenatom.demo.domain.dto.SavedDocumentDto;
 import ru.greenatom.demo.repo.*;
-import ru.greenatom.demo.services.DocumentService;
+import ru.greenatom.demo.service.DocumentService;
 
 import javax.validation.Valid;
 import java.time.LocalDateTime;
@@ -35,7 +35,6 @@ public class DocumentController {
     private final DocumentHistoryRepo documentHistoryRepo;
     private final DocumentTypeRepo documentTypeRepo;
 
-
     Logger logger = LoggerFactory.getLogger(DocumentController.class);
 
     @Autowired
@@ -54,13 +53,15 @@ public class DocumentController {
     }
 
     /**
-     * @param documentBuildingCreateModel входной класс (Тело запроса)
+     * @param createdDocumentDto входной класс (Тело запроса)
      * @param bindingResult проверяет documentBuildingCreateModel на корректность(хранит в себе ошибки при сборке и собран ли он )
      **/
     @PostMapping
     @ResponseBody
-    public Map<String, Object> crate(@RequestBody @Valid DocumentBuildingCreateModel documentBuildingCreateModel,
-                                     BindingResult bindingResult) {
+    public Map<String, Object> create(
+            @RequestBody @Valid CreatedDocumentDto createdDocumentDto,
+            BindingResult bindingResult
+    ) {
         Map<String, Object> strings = new HashMap<>();
         logger.info("documentBuildingCreateModel собрана:" + !bindingResult.hasErrors());
         if (bindingResult.hasErrors()) {
@@ -70,13 +71,10 @@ public class DocumentController {
                 errors.add(e.getDefaultMessage());
             });
             strings.put("error", errors);
-            return strings;
         } else {
-
-            strings.put("id", this.documentService.crate(documentBuildingCreateModel).getDocumentId());
-            return strings;
+            strings.put("id", this.documentService.create(createdDocumentDto).getDocumentId());
         }
-
+        return strings;
     }
 
     @Deprecated
@@ -89,49 +87,44 @@ public class DocumentController {
         document.setDocumentName("name");
         document.setPassword("name");
 
-
         //   document.setAccessTypes(     Collections.singleton(Action.SAVE));
 
         SecrecyLevel secrecyLevel = new SecrecyLevel();
         secrecyLevel.setSecrecyName("SecrecyName");
         secrecyLevel.setDocuments(Collections.singleton(document));
 
-
         DocumentType documentType = new DocumentType();
         documentType.setDocumentTypeName("DocumentTypeName");
         documentType.setDocuments(Collections.singleton(document));
 
-
         document.setDocumentSecrecyLevel(secrecyLevel);
         document.setDocumentType(documentType);
 
-
         this.secrecyLevelRepo.save(secrecyLevel);
-
         this.documentTypeRepo.save(documentType);
-
         this.documentRepo.save(document);
+
         return document;
-
     }
 
-    @GetMapping("/{idDocument}")
+    @GetMapping("/{documentId}")
     @ResponseBody
-    public long getDocumentDelete(@PathVariable String idDocument) {
-
-
-        return documentService.delete(Long.parseLong(idDocument)).getDocumentId();
+    public long getDocumentDelete(@PathVariable String documentId) {
+        return documentService.delete(Long.parseLong(documentId)).getDocumentId();
     }
+
     /**
      * @param buildingSaveModel входной класс (Тело запроса)
      * @param bindingResult проверяет documentBuildingCreateModel на корректность(хранит в себе
      *                      ошибки при сборке и собран ли он )
      **/
-    @PutMapping("/{idDocument}")
+    @PutMapping("/{documentId}")
     @ResponseBody
-    public Map<String, Object> save(@PathVariable String idDocument,
-                                    @RequestBody @Valid DocumentBuildingSaveModel buildingSaveModel,
-                                    BindingResult bindingResult) {
+    public Map<String, Object> save(
+            @PathVariable String documentId,
+            @RequestBody @Valid SavedDocumentDto buildingSaveModel,
+            BindingResult bindingResult
+    ) {
         Map<String, Object> strings = new HashMap<>();
         if (bindingResult.hasErrors()) {
             List<String> errors = new ArrayList<String>();
@@ -140,16 +133,15 @@ public class DocumentController {
                 logger.error("Error сборки DocumentBuildingSaveModel:" + e.getDefaultMessage());
                 errors.add(e.getDefaultMessage());
             });
+
             strings.put("error", errors);
-            return strings;
         } else {
             Document document =this.documentService.save(buildingSaveModel);
             logger.info("DocumentBuildingSaveModel собрана:" + !bindingResult.hasErrors());
             strings.put("id", document.getDocumentId());
             strings.put("versionDocument",document.getDocumentId());
-            return strings;
         }
+
+        return strings;
     }
-
 }
-

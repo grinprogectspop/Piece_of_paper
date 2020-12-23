@@ -1,32 +1,33 @@
-package ru.greenatom.demo.models.binding;
+package ru.greenatom.demo.domain.dto;
 
 import lombok.Data;
-import ru.greenatom.demo.models.binding.validations.IsEmailRegistered;
-import ru.greenatom.demo.models.binding.validations.IsPasswordMatching;
+import ru.greenatom.demo.validation.IsEmailRegistered;
+import ru.greenatom.demo.validation.IsPasswordMatching;
 
 import javax.validation.constraints.Email;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
 @Data
 @IsPasswordMatching
-public class UserBuildingModel {
-    @Email(message = "Неправильно указан Email")
+public class UserDto {
+    @Email(message = "Неправильно указан E-mail")
     @IsEmailRegistered
-
     private String email;
+
     @Size(min = 4, max = 20, message = "Имя пользователя должно быть от 4 до 20 символов")
-    @NotNull
+    @NotBlank
     private String userName;
+
     @Size(min = 4, max = 20, message = "Фамилия пользователя должно быть от 4 до 20 символов")
-    @NotNull
+    @NotBlank
     private String surname;
-    @NotNull
+
+    @NotBlank
     @Size(min = 4, max = 30, message = "Пароль должен быть от 4 до 30 символов")
     private String password;
-    @NotNull
+
+    @NotBlank
     @Size(min = 4, max = 30, message = "Пароль должен быть от 4 до 30 символов")
     private String confirmPassword;
-
-
 }

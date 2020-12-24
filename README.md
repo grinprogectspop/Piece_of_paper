@@ -21,7 +21,7 @@ ALTER USER root WITH SUPERUSER;
 
 1. [ECM.Spec.Req]( https://docs.google.com/document/d/1Cl_ODNYa6SD3kMDGC9Oe_ZAThl4ZbTUfSrDesAwvpw0/edit)
 1.1. [ECM.Spes.Req.1](https://docs.google.com/document/d/1ddqJkioS3f6REdufsz7IEWBCUnSk2RddCmvLxc0WPMA/edit)
-1.2. [ECM.Spes.Req.2]
+1.2. [ECM.Spes.Req.2]()
 2. [ECM Use cases](https://docs.google.com/document/d/139av4IKlbdCjoK7hG5jaNDYhRotn4MNV-oQjhFSOzL4/edit?usp=sharing)
 3. [API]( https://docs.google.com/document/d/1a_dS6EJJqt3a9z35XfsW9CUnLNWlNTuIuOnUZhHX0q0/edit?usp=sharing)
 4. [Доска задач](https://trello.com/invite/b/a5RVPYil/0a8bf0486a2dfc4731471282234dd1f8/%D0%BF%D1%80%D0%BE%D1%8D%D0%BA%D1%82)

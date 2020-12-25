@@ -36,11 +36,6 @@ public class Document {
   @JsonView(Views.documents.class)
   private boolean deleted;
 
-  //  @ElementCollection(targetClass = Action.class, fetch = FetchType.EAGER)
-  //  @CollectionTable(name = "access", joinColumns = @JoinColumn(name = "document_id"))
-  //  @Enumerated(EnumType.STRING)
-  //  private Set<Action> accessTypes;
-
   @ManyToOne(cascade = CascadeType.PERSIST)
   @JoinColumn(name = "document_type_id")
   private DocumentType documentType;
@@ -59,12 +54,28 @@ public class Document {
   private Set<DocumentHistory> changes;
 
   @OneToMany(mappedBy = "document",
+          orphanRemoval = true,
+          fetch = FetchType.EAGER,
+          cascade = CascadeType.ALL
+  )
+  private Set<DocumentAccess> documentAccesses;
+
+  @OneToMany(mappedBy = "document",
              orphanRemoval = true,
              fetch = FetchType.EAGER,
              cascade = CascadeType.ALL
   )
   @JsonView(Views.documents.class)
   private Set<DocumentVersion> versions;
+
+
+  public Set<DocumentAccess> getDocumentAccesses() {
+    return documentAccesses;
+  }
+
+  public void setDocumentAccesses(Set<DocumentAccess> documentAccesses) {
+    this.documentAccesses = documentAccesses;
+  }
 
   public Long getDocumentId() {
     return documentId;
@@ -137,5 +148,4 @@ public class Document {
   public void setVersions(Set<DocumentVersion> versions) {
     this.versions = versions;
   }
-
 }

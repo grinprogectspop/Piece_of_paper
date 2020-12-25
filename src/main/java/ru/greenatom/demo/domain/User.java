@@ -40,10 +40,12 @@ public class User implements Serializable, UserDetails {
     @Enumerated(EnumType.STRING)
     private Set<Role> roles;
 
-    @ElementCollection(targetClass = Action.class, fetch = FetchType.EAGER)
-    @CollectionTable(name = "access", joinColumns = @JoinColumn(name = "user_id"))
-    @Enumerated(EnumType.STRING)
-    private Set<Action> accessTypes;
+    @OneToMany(mappedBy = "user",
+            orphanRemoval = true,
+            fetch = FetchType.EAGER,
+            cascade = CascadeType.ALL
+    )
+    private Set<DocumentAccess> documentAccesses;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
@@ -108,6 +110,13 @@ public class User implements Serializable, UserDetails {
         isEnabled = enabled;
     }
 
+    public Set<DocumentAccess> getDocumentAccesses() {
+        return documentAccesses;
+    }
+
+    public void setDocumentAccesses(Set<DocumentAccess> documentAccesses) {
+        this.documentAccesses = documentAccesses;
+    }
 
     public Long getUserId() {
         return userId;
@@ -163,14 +172,6 @@ public class User implements Serializable, UserDetails {
 
     public void setRoles(Set<Role> roles) {
         this.roles = roles;
-    }
-
-    public Set<Action> getAccessTypes() {
-        return accessTypes;
-    }
-
-    public void setAccessTypes(Set<Action> accessTypes) {
-        this.accessTypes = accessTypes;
     }
 
     public Set<Position> getPositions() {

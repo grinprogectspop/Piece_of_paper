@@ -33,33 +33,33 @@ public class UserServiceImpl implements UserService {
         this.positionRepo = positionRepo;
     }
 
-  @Override
-  public Long create(UserDto userDto) {
-    User userFromDb = userRepo.findByEmail(userDto.getEmail());
+    @Override
+    public Long create(UserDto userDto) {
+        User userFromDb = userRepo.findByEmail(userDto.getEmail());
 
-    if (userFromDb != null) {
-      // This means that user is already exists
-      return -1L;
+        if (userFromDb != null) {
+            // This means that user is already exists
+            return -1L;
+        }
+
+        User userEntity = modelMapper.map(userDto, User.class);
+
+        userEntity.setPassword(bCryptPasswordEncoder.encode(userEntity.getPassword()));
+        userEntity.setAccountNonExpired(true);
+        userEntity.setAccountNonLocked(true);
+        userEntity.setCredentialsNonExpired(true);
+        userEntity.setEnabled(true);
+
+        // Just fot testing
+        Position position = new Position();
+        position.setPositionName("test");
+
+        userRepo.save(userEntity);
+        position.setUsers(Collections.singleton(userRepo.findByUserId(userEntity.getUserId())));
+        positionRepo.save(position);
+
+        return userEntity.getUserId();
     }
-
-    User userEntity = modelMapper.map(userDto, User.class);
-
-    userEntity.setPassword(bCryptPasswordEncoder.encode(userEntity.getPassword()));
-    userEntity.setAccountNonExpired(true);
-    userEntity.setAccountNonLocked(true);
-    userEntity.setCredentialsNonExpired(true);
-    userEntity.setEnabled(true);
-
-    // Just fot testing
-    Position position = new Position();
-    position.setPositionName("test");
-
-    userRepo.save(userEntity);
-    position.setUsers(Collections.singleton(userRepo.findByUserId(userEntity.getUserId())));
-    positionRepo.save(position);
-
-    return userEntity.getUserId();
-  }
 
     /**
      * @param email - to log in as username we use E-mail instead of login

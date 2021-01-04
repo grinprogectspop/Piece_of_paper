@@ -43,7 +43,7 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
-    public Document create(CreatedDocumentDto createdDocumentDto) {
+    public Document create(CreatedDocumentDto createdDocumentDto, User principal) {
         Document createdDocument = new Document();
         createdDocument.setDocumentName(createdDocumentDto.getDocumentName());
         createdDocument.setCreationDate(LocalDateTime.now());
@@ -64,9 +64,9 @@ public class DocumentServiceImpl implements DocumentService {
         // DocumentHistory
         DocumentHistory documentHistory = new DocumentHistory();
         documentHistory.setDocument(createdDocument);
-        documentHistory.setActions(Set.of(Action.READ, Action.SAVE));
+        documentHistory.setActions(Set.of(Action.READ, Action.SAVE,Action.CREATE));
         documentHistory.setActionDate(LocalDateTime.now());
-        documentHistory.setAuthor(userRepo.findByUserId(createdDocumentDto.getUserId()));
+        documentHistory.setAuthor(principal);
         documentHistory.setDescription("setDescription");
         createdDocument.setChanges(Collections.singleton(documentHistory));
 
@@ -84,10 +84,7 @@ public class DocumentServiceImpl implements DocumentService {
 
         // Changes saving
         documentRepo.save(createdDocument);
-        secrecyLevelRepo.save(secrecyLevel);
-        documentTypeRepo.save(documentType);
-        documentHistoryRepo.save(documentHistory);
-        documentVersionRepo.save(documentVersion);
+
 
         return createdDocument;
     }

@@ -24,7 +24,7 @@ public class DocumentAccess {
     @JoinColumn(name = "document_id")
     Document document;
 
-    @ManyToOne(cascade = CascadeType.PERSIST)
+    @ManyToOne(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     User user;
 

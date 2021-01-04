@@ -7,5 +7,6 @@ import ru.greenatom.demo.domain.DocumentAccess;
 import java.util.List;
 
 public interface DocumentAccessRepo extends JpaRepository<DocumentAccess, Long> {
-    List<Action> findActionByUserIdAndDocumentId(Long userId, Long documentId);
+
+    List<Action> findActionByUserUserIdAndDocumentAccessId(Long userId, Long documentId);
 }

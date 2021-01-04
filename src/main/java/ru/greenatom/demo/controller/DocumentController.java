@@ -5,6 +5,7 @@ import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -73,7 +74,7 @@ public class DocumentController {
     @ResponseBody
     public Map<String, Object> create(
             @RequestBody @Valid CreatedDocumentDto createdDocumentDto,
-            BindingResult bindingResult
+            BindingResult bindingResult, Authentication user
     ) {
         Map<String, Object> strings = new HashMap<>();
         logger.info("documentBuildingCreateModel собрана:" + !bindingResult.hasErrors());
@@ -85,7 +86,7 @@ public class DocumentController {
             });
             strings.put("error", errors);
         } else {
-            strings.put("id", this.documentService.create(createdDocumentDto).getDocumentId());
+            strings.put("id", this.documentService.create(createdDocumentDto, (User) user.getPrincipal()).getDocumentId());
         }
         return strings;
     }
@@ -163,16 +164,17 @@ public class DocumentController {
      * @param user            which giving access to the document
      * @param changeAccessDto dto access
      */
-    @PutMapping("/{idDocument}")
+    @PutMapping("/d/{idDocument}")
     @ResponseBody
     public void changeAccess(@PathVariable Long idDocument,
-                             @AuthenticationPrincipal User user,
+                             Authentication userAuth,
                              @RequestBody ChangeAccessDto changeAccessDto) {
-        if (documentHistoryRepo.findByAction(Action.CREATE)
+        User user = (User) userAuth.getPrincipal();
+        if (documentHistoryRepo.findByActions(Action.CREATE)
                 .get(0).getAuthor().equals(user)) {
 
             User userToChange = userRepo.findByUserId(changeAccessDto.getUserToChangeId());
-            List<Action> actionList = documentAccessRepo.findActionByUserIdAndDocumentId(userToChange.getUserId(),
+            List<Action> actionList = documentAccessRepo.findActionByUserUserIdAndDocumentAccessId(userToChange.getUserId(),
                     changeAccessDto.getDocumentId());
 
             if (!actionList.contains(changeAccessDto.getAction())) {

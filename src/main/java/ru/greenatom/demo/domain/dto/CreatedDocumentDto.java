@@ -5,16 +5,12 @@ import ru.greenatom.demo.domain.DocumentType;
 import ru.greenatom.demo.domain.SecrecyLevel;
 import ru.greenatom.demo.validation.IsPasswordMatching;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+
 
 @Data
 @IsPasswordMatching
 public class CreatedDocumentDto {
-    @NotBlank
-    private long userId;
-
     @Size(min = 4, max = 100, message = "Имя документа должно быть от 4 до 100 символов")
     private String documentName;
 

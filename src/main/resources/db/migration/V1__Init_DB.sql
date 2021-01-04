@@ -1,133 +1,148 @@
 create sequence hibernate_sequence start 1 increment 1;
-
-create table access (
-    user_id int8 not null,
-    access_types varchar(255),
-    document_id int8 not null
+create table usr
+(
+    user_id                    bigint  not null
+        constraint usr_pkey
+            primary key,
+    email                      varchar(255),
+    is_account_non_expired     boolean not null,
+    is_account_non_locked      boolean not null,
+    is_credentials_non_expired boolean not null,
+    is_enabled                 boolean not null,
+    name                       varchar(255),
+    password                   varchar(255),
+    patronymic                 varchar(255),
+    surname                    varchar(255)
 );
 
-create table action (
-    document_history_id int8 not null,
-    actions varchar(255)
+create table user_role
+(
+    user_id bigint not null
+        constraint user_role_usr
+            references usr,
+    roles   varchar(255)
+);
+create table document_type
+(
+    document_type_id   bigint not null
+        constraint document_type_pkey
+            primary key,
+    document_type_name varchar(255)
+);
+create table secrecy_level
+(
+    secrecy_id   bigint not null
+        constraint secrecy_level_pkey
+            primary key,
+    secrecy_name varchar(255)
+);
+create table document
+(
+    document_id      bigint                not null
+        constraint document_pkey
+            primary key,
+    creation_date    timestamp,
+    deleted          boolean default false not null,
+    document_name    varchar(255),
+    password         varchar(255),
+    secrecy_level_id bigint
+        constraint document_secrecy_level
+            references secrecy_level,
+    document_type_id bigint
+        constraint document_document_type
+            references document_type
 );
 
-create table document (
-    document_id int8 not null,
-    creation_date timestamp,
-    deleted boolean default false not null,
-    document_name varchar(255),
-    password varchar(255),
-    secrecy_level_id int8,
-    document_type_id int8,
-    primary key (document_id)
+create table document_access
+(
+    document_access_id bigint not null
+        constraint document_access_pkey
+            primary key,
+    document_id        bigint
+        constraint document_access_document
+            references document,
+    user_id            bigint
+        constraint document_access_usr
+            references usr
 );
 
-create table document_history (
-    document_history_id int8 not null,
-    action_date timestamp,
-    description varchar(2048),
-    user_id int8,
-    document_id int8,
-    document_version_id int8,
-    primary key (document_history_id)
+create table access(
+    document_access_id bigint not null
+        constraint access_document_access
+            references document_access,
+    access_types       varchar(255)
 );
 
-create table document_type (
-   document_type_id int8 not null,
-   document_type_name varchar(255),
-   primary key (document_type_id)
+
+
+create table document_version
+(
+    document_version_id bigint not null
+        constraint document_version_pkey
+            primary key,
+    date                timestamp,
+    url                 varchar(255),
+    version_name        varchar(255),
+    document_id         bigint
+        constraint document_version_document
+            references document
 );
 
-create table document_version (
-    document_version_id int8 not null,
-    date timestamp,
-    url varchar(2048),
-    version_name varchar(255),
-    document_id int8,
-    primary key (document_version_id)
+
+create table document_history
+(
+    document_history_id bigint not null
+        constraint document_history_pkey
+            primary key,
+    action_date         timestamp,
+    description         varchar(255),
+    user_id             bigint
+        constraint document_history_usr
+            references usr,
+    document_id         bigint
+        constraint document_history_document
+            references document,
+    document_version_id bigint
+        constraint document_history_document_version
+            references document_version
 );
 
-create table position (
-    position_id int8 not null,
-    position_name varchar(2048),
-    primary key (position_id)
+
+create table action
+(
+    document_history_id bigint not null
+        constraint action_document_history
+            references document_history,
+    actions             varchar(255)
 );
 
-create table secrecy_level (
-    secrecy_id int8 not null,
-    secrecy_name varchar(255),
-    primary key (secrecy_id)
+
+
+
+
+
+
+
+create table position
+(
+    position_id   bigint not null
+        constraint position_pkey
+            primary key,
+    position_name varchar(255)
 );
 
-create table user_position (
-    user_id int8 not null,
-    position_id int8 not null,
-    primary key (position_id, user_id)
+
+
+create table user_position
+(
+    user_id     bigint not null
+        constraint user_position_usr
+            references usr,
+    position_id bigint not null
+        constraint user_position_position
+            references position,
+    constraint user_position_pkey
+        primary key (position_id, user_id)
 );
 
-create table user_role (
-    user_id int8 not null,
-    roles varchar(255)
-);
 
-create table usr (
-     user_id int8 not null,
-     email varchar(255),
-     is_account_non_expired boolean not null,
-     is_account_non_locked boolean not null,
-     is_credentials_non_expired boolean not null,
-     is_enabled boolean not null,
-     name varchar(255),
-     password varchar(255),
-     patronymic varchar(255),
-     surname varchar(255),
-     primary key (user_id)
-);
-
-alter table if exists access
-    add constraint access_user_fk
-    foreign key (user_id) references usr;
-
-alter table if exists access
-    add constraint access_document_fk
-    foreign key (document_id) references document;
-
-alter table if exists action
-    add constraint action_document_history_fk
-    foreign key (document_history_id) references document_history;
-
-alter table if exists document
-    add constraint document_secrecy_level_fk
-    foreign key (secrecy_level_id) references secrecy_level;
-
-alter table if exists document
-    add constraint document_document_type_fk
-    foreign key (document_type_id) references document_type;
-
-alter table if exists document_history
-    add constraint document_history_user_fk
-    foreign key (user_id) references usr;
-
-alter table if exists document_history
-    add constraint document_history_document_fk
-    foreign key (document_id) references document;
-
-alter table if exists document_history
-    add constraint document_history_document_version_fk
-    foreign key (document_version_id) references document_version;
-
-alter table if exists document_version
-    add constraint document_version_document_fk
-    foreign key (document_id) references document;
-
-alter table if exists user_position
-    add constraint user_position_position_fk
-    foreign key (position_id) references position;
-
-alter table if exists user_position
-    add constraint user_position_user_fk
-    foreign key (user_id) references usr;
-
-alter table if exists user_role
-    add constraint user_role_user_fk
-    foreign key (user_id) references usr;

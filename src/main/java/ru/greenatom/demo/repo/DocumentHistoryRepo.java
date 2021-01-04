@@ -8,5 +8,5 @@ import java.util.List;
 
 public interface DocumentHistoryRepo extends JpaRepository<DocumentHistory, Long> {
     DocumentHistory findByDocumentHistoryId(Long iterable);
-    List<DocumentHistory> findByAction(Action action);
+    List<DocumentHistory> findByActions(Action action);
 }

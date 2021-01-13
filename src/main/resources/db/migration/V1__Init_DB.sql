@@ -1,4 +1,5 @@
 create sequence hibernate_sequence start 1 increment 1;
+
 create table usr
 (
     user_id                    bigint  not null
@@ -22,6 +23,7 @@ create table user_role
             references usr,
     roles   varchar(255)
 );
+
 create table document_type
 (
     document_type_id   bigint not null
@@ -29,6 +31,7 @@ create table document_type
             primary key,
     document_type_name varchar(255)
 );
+
 create table secrecy_level
 (
     secrecy_id   bigint not null
@@ -36,6 +39,7 @@ create table secrecy_level
             primary key,
     secrecy_name varchar(255)
 );
+
 create table document
 (
     document_id      bigint                not null
@@ -73,8 +77,6 @@ create table access(
     access_types       varchar(255)
 );
 
-
-
 create table document_version
 (
     document_version_id bigint not null
@@ -87,7 +89,6 @@ create table document_version
         constraint document_version_document
             references document
 );
-
 
 create table document_history
 (
@@ -116,13 +117,6 @@ create table action
     actions             varchar(255)
 );
 
-
-
-
-
-
-
-
 create table position
 (
     position_id   bigint not null
@@ -130,8 +124,6 @@ create table position
             primary key,
     position_name varchar(255)
 );
-
-
 
 create table user_position
 (
@@ -141,8 +133,6 @@ create table user_position
     position_id bigint not null
         constraint user_position_position
             references position,
-    constraint user_position_pkey
-        primary key (position_id, user_id)
+        constraint user_position_pkey
+    primary key (position_id, user_id)
 );
-
-

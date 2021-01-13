@@ -36,30 +36,48 @@ public class UserController {
     @PostMapping("/registration")
     @ResponseBody
     @JsonView(Views.documents.class)
-    public String createUser(
+    public Long createUser(
             @RequestBody @Valid UserDto userDto,
-            BindingResult bindingResult,
-            Model model
+            BindingResult bindingResult
     ) {
-
-
         if (bindingResult.hasErrors()) {
             Map<String, String> errors = ControllerUtils.getErrors(bindingResult);
 
-            model.addAttribute("errors", errors);
+            // TODO: return errors to somewhere
 
-            return "registration";
+            return -1L;
         }
 
-        model.addAttribute("id", this.userService.create(userDto));
-
-        return "login";
+        return this.userService.create(userDto);
     }
-    @GetMapping("/123")
+
+    /**
+     * @param userDto - входной класс (Тело запроса)
+     * @param bindingResult - проверяет documentBuildingCreateModel на корректность
+     *                      (хранит в себе ошибки при сборке и собран ли он)
+     **/
+    @PostMapping("/auth")
+    @ResponseBody
+    @JsonView(Views.documents.class)
+    public Long authorizeUser(
+            @RequestBody @Valid UserDto userDto,
+            BindingResult bindingResult
+    ) {
+        if (bindingResult.hasErrors()) {
+            Map<String, String> errors = ControllerUtils.getErrors(bindingResult);
+
+            // TODO: return errors to somewhere
+
+            return -1L;
+        }
+
+        return this.userService.create(userDto);
+    }
+
+    @GetMapping("/users")
     @ResponseBody
     @JsonView(Views.IdName.class)
     public List<User> users(){
         return userRepo.findAll();
     }
-
 }

@@ -62,6 +62,28 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
+     * Authorization function
+     * @param userDto - contains entered email,
+     *                username and password
+     * @return User id
+     */
+    public Long authorize(UserDto userDto) {
+        User userFromDb = userRepo.findByEmail(userDto.getEmail());
+
+        if (userFromDb == null) {
+            // This means that user is not exists
+            return -1L;
+        }
+
+        // If entered password correct
+        if (userFromDb.getPassword().equals(userDto.getPassword())) {
+            return userFromDb.getUserId();
+        }
+
+        return -1L;
+    }
+
+    /**
      * @param email - to log in as username we use E-mail instead of login
      * @return Requested user
      * @throws UsernameNotFoundException - if username doesn't found

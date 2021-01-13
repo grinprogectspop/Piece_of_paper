@@ -161,14 +161,16 @@ public class DocumentController {
 
     /**
      * @param idDocument      document id
-     * @param user            which giving access to the document
+     * @param userAuth        which giving access to the document
      * @param changeAccessDto dto access
      */
     @PutMapping("/d/{idDocument}")
     @ResponseBody
-    public void changeAccess(@PathVariable Long idDocument,
-                             Authentication userAuth,
-                             @RequestBody ChangeAccessDto changeAccessDto) {
+    public void changeAccess(
+            @PathVariable Long idDocument,
+            Authentication userAuth,
+            @RequestBody ChangeAccessDto changeAccessDto
+    ) {
         User user = (User) userAuth.getPrincipal();
         if (documentHistoryRepo.findByActions(Action.CREATE)
                 .get(0).getAuthor().equals(user)) {

@@ -7,7 +7,7 @@ import javax.validation.constraints.NotBlank;
 import java.util.Set;
 
 @Entity
-@Data
+
 public class Position {
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
@@ -23,4 +23,28 @@ public class Position {
     inverseJoinColumns = @JoinColumn(name = "user_id")
   )
   private Set<User> users;
+
+  public Long getPositionId() {
+    return positionId;
+  }
+
+  public void setPositionId(Long positionId) {
+    this.positionId = positionId;
+  }
+
+  public String getPositionName() {
+    return positionName;
+  }
+
+  public void setPositionName(String positionName) {
+    this.positionName = positionName;
+  }
+
+  public Set<User> getUsers() {
+    return users;
+  }
+
+  public void setUsers(Set<User> users) {
+    this.users = users;
+  }
 }

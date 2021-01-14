@@ -1,6 +1,7 @@
 package ru.greenatom.demo.controller;
 
 import com.fasterxml.jackson.annotation.JsonView;
+import io.swagger.annotations.*;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,6 +71,15 @@ public class DocumentController {
      * @param createdDocumentDto входной класс (Тело запроса)
      * @param bindingResult      проверяет documentBuildingCreateModel на корректность(хранит в себе ошибки при сборке и собран ли он )
      **/
+    @ApiOperation(value = "Создание документа", response = Long.class, responseContainer = "id", httpMethod = "POST",
+                  notes = "API для создания документа")
+    @ApiImplicitParams({
+                               @ApiImplicitParam(name = "x-auth-token", value = "", dataType = "string",
+                                                 required = true, paramType = "header")})
+
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success", response = CreatedDocumentDto.class,
+                         responseContainer = "Данные документа"),})
     @PostMapping
     @ResponseBody
     public Map<String, Object> create(
@@ -90,36 +100,15 @@ public class DocumentController {
         }
         return strings;
     }
+    @ApiOperation(value = "Удаление документа", response = Long.class, responseContainer = "id", httpMethod = "GET",
+                  notes = "API для удаления документа")
+    @ApiImplicitParams({
+                               @ApiImplicitParam(name = "x-auth-token", value = "", dataType = "string",
+                                                 required = true, paramType = "header")})
 
-    @Deprecated
-    @GetMapping("/test")
-    @ResponseBody
-    @JsonView(Views.documents.class)
-    public Document getDocumentId() {
-        Document document = new Document();
-        document.setCreationDate(LocalDateTime.now());
-        document.setDocumentName("name");
-        document.setPassword("name");
-
-        //   document.setAccessTypes(     Collections.singleton(Action.SAVE));
-
-        SecrecyLevel secrecyLevel = new SecrecyLevel();
-        secrecyLevel.setSecrecyName("SecrecyName");
-        secrecyLevel.setDocuments(Collections.singleton(document));
-
-        DocumentType documentType = new DocumentType();
-        documentType.setDocumentTypeName("DocumentTypeName");
-        documentType.setDocuments(Collections.singleton(document));
-
-        document.setDocumentSecrecyLevel(secrecyLevel);
-        document.setDocumentType(documentType);
-
-        this.secrecyLevelRepo.save(secrecyLevel);
-        this.documentTypeRepo.save(documentType);
-        this.documentRepo.save(document);
-
-        return document;
-    }
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success", response = String.class,
+                         responseContainer = "Удаление документа"),})
 
     @GetMapping("/{documentId}")
     @ResponseBody
@@ -132,6 +121,15 @@ public class DocumentController {
      * @param bindingResult     проверяет documentBuildingCreateModel на корректность(хранит в себе
      *                          ошибки при сборке и собран ли он )
      **/
+    @ApiOperation(value = "Сохранение документа", response = Long.class, responseContainer = "???", httpMethod = "GET",
+                  notes = "API для сохранения документа", responseReference = "123")
+    @ApiImplicitParams({
+                               @ApiImplicitParam(name = "x-auth-token", value = "", dataType = "string",
+                                                 required = true, paramType = "header")})
+
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success", response = Map.class,
+                         responseContainer = "Сохранение документа"),})
     @PutMapping("/{documentId}")
     @ResponseBody
     public Map<String, Object> save(
@@ -164,6 +162,15 @@ public class DocumentController {
      * @param userAuth        which giving access to the document
      * @param changeAccessDto dto access
      */
+    @ApiOperation(value = "Изменение доступа к документу", response = Long.class, responseContainer = "???", httpMethod = "GET",
+                  notes = "API для изменение доступа к документу")
+    @ApiImplicitParams({
+                               @ApiImplicitParam(name = "x-auth-token", value = "", dataType = "string",
+                                                 required = true, paramType = "header")})
+
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success", response = void.class,
+                         responseContainer = "Изменение доступа к документу")})
     @PutMapping("/d/{idDocument}")
     @ResponseBody
     public void changeAccess(

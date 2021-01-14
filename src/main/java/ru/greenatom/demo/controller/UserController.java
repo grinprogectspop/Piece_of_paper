@@ -1,6 +1,7 @@
 package ru.greenatom.demo.controller;
 
 import com.fasterxml.jackson.annotation.JsonView;
+import io.swagger.annotations.*;
 import org.modelmapper.ModelMapper;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -17,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
+@Api(value = "User controller")
 public class UserController {
     private final UserRepo userRepo;
     private final UserService userService;
@@ -29,17 +31,31 @@ public class UserController {
     }
 
     /**
-     * @param userDto - входной класс (Тело запроса)
+     * @param userDto       - входной класс (Тело запроса)
      * @param bindingResult - проверяет documentBuildingCreateModel на корректность
      *                      (хранит в себе ошибки при сборке и собран ли он)
      **/
+
+    @ApiOperation(value = "Создание пользователя", response = Long.class, responseContainer = "id",httpMethod = "POST",
+                  notes = "API для создания пользователя")
+    @ApiImplicitParams({
+                               @ApiImplicitParam(name = "x-auth-token", value = "", dataType = "string",
+                                                 required = true, paramType = "header")})
+
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success", response = Long.class,
+                         responseContainer = "Данные регистрации"),})
+
+
+
+
     @PostMapping("/registration")
     @ResponseBody
     @JsonView(Views.documents.class)
     public Long createUser(
             @RequestBody @Valid UserDto userDto,
             BindingResult bindingResult
-    ) {
+                          ) {
         if (bindingResult.hasErrors()) {
             Map<String, String> errors = ControllerUtils.getErrors(bindingResult);
 
@@ -52,17 +68,31 @@ public class UserController {
     }
 
     /**
-     * @param userDto - входной класс (Тело запроса)
+     * @param userDto       - входной класс (Тело запроса)
      * @param bindingResult - проверяет documentBuildingCreateModel на корректность
      *                      (хранит в себе ошибки при сборке и собран ли он)
      **/
+
+    @ApiOperation(value = "Создание пользователя", response = Long.class, responseContainer = "id",httpMethod = "POST",
+                  notes = "API для создания пользователя")
+    @ApiImplicitParams({
+                               @ApiImplicitParam(name = "x-auth-token", value = "", dataType = "string",
+                                                 required = true, paramType = "header")})
+
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success", response = Long.class,
+                         responseContainer = "Данные регистрации"),})
+
+
+
+
     @PostMapping("/auth")
     @ResponseBody
     @JsonView(Views.documents.class)
     public Long authorizeUser(
             @RequestBody @Valid UserDto userDto,
             BindingResult bindingResult
-    ) {
+                             ) {
         if (bindingResult.hasErrors()) {
             Map<String, String> errors = ControllerUtils.getErrors(bindingResult);
 
@@ -74,10 +104,15 @@ public class UserController {
         return this.userService.create(userDto);
     }
 
+    @ApiOperation(value = "Получить всех пользователей", response = List.class, responseContainer = "list",httpMethod = "GET",
+                  notes = "API для создания пользователя")
+    @ApiImplicitParams({
+                               @ApiImplicitParam(name = "x-auth-token", value = "", dataType = "string",
+                                                 required = true, paramType = "header")})
     @GetMapping("/users")
     @ResponseBody
     @JsonView(Views.IdName.class)
-    public List<User> users(){
+    public List<User> users() {
         return userRepo.findAll();
     }
 }

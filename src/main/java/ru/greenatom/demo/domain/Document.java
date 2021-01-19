@@ -68,6 +68,21 @@ public class Document {
   @JsonView(Views.documents.class)
   private Set<DocumentVersion> versions;
 
+  @ManyToMany(fetch = FetchType.EAGER)
+  @JoinTable(
+    name = "document_catalog",
+    joinColumns = @JoinColumn(name = "document_id"),
+    inverseJoinColumns = @JoinColumn(name = "catalog_id")
+  )
+  private Set<Catalog> catalogs;
+
+  public Set<Catalog> getCatalogs() {
+    return catalogs;
+  }
+
+  public void setCatalogs(Set<Catalog> catalogs) {
+    this.catalogs = catalogs;
+  }
 
   public Set<DocumentAccess> getDocumentAccesses() {
     return documentAccesses;

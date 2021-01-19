@@ -25,7 +25,7 @@ ALTER USER root WITH SUPERUSER;
 2. [ECM Use cases](https://docs.google.com/document/d/139av4IKlbdCjoK7hG5jaNDYhRotn4MNV-oQjhFSOzL4/edit?usp=sharing)
 3. [API]( https://docs.google.com/document/d/1a_dS6EJJqt3a9z35XfsW9CUnLNWlNTuIuOnUZhHX0q0/edit?usp=sharing)
 4. [Доска задач](https://trello.com/invite/b/a5RVPYil/0a8bf0486a2dfc4731471282234dd1f8/%D0%BF%D1%80%D0%BE%D1%8D%D0%BA%D1%82)
-5. [ER-диаграмма]( https://yadi.sk/i/Z290e3R4JSs5-Q)
+5. [ER-диаграмма]( https://yadi.sk/i/Z290e3R4JSs5-Q) [ER-диаграмма 2 приоритет](https://yadi.sk/i/fwIiYD7GSnujLw)
 
 # swagger
 

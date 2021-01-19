@@ -10,6 +10,8 @@ import ru.greenatom.demo.domain.User;
 import ru.greenatom.demo.domain.dto.UserDto;
 import ru.greenatom.demo.repo.PositionRepo;
 import ru.greenatom.demo.repo.UserRepo;
+import ru.greenatom.demo.service.mail.MailType;
+import ru.greenatom.demo.service.mail.NotificationMailSender;
 
 import java.util.Collections;
 
@@ -23,14 +25,19 @@ public class UserServiceImpl implements UserService {
     private final UserRepo userRepo;
     private final PositionRepo positionRepo;
 
+    private final NotificationMailSender mailSender;
+
     public UserServiceImpl(ModelMapper modelMapper,
                            BCryptPasswordEncoder bCryptPasswordEncoder,
-                           UserRepo userRepo, PositionRepo positionRepo) {
+                           UserRepo userRepo, PositionRepo positionRepo,
+                           NotificationMailSender mailSender
+    ) {
         this.modelMapper = modelMapper;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
 
         this.userRepo = userRepo;
         this.positionRepo = positionRepo;
+        this.mailSender = mailSender;
     }
 
     @Override
@@ -50,13 +57,16 @@ public class UserServiceImpl implements UserService {
         userEntity.setCredentialsNonExpired(true);
         userEntity.setEnabled(true);
 
-        // Just fot testing
+        // Just for testing
         Position position = new Position();
         position.setPositionName("test");
 
         userRepo.save(userEntity);
         position.setUsers(Collections.singleton(userRepo.findByUserId(userEntity.getUserId())));
         positionRepo.save(position);
+
+        // Sending a notification
+        mailSender.sendEmail(userEntity, userEntity, "Registration letter", "", MailType.SIGN_UP);
 
         return userEntity.getUserId();
     }

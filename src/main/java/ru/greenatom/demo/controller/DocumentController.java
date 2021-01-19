@@ -6,7 +6,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import ru.greenatom.demo.domain.Action;
@@ -18,9 +17,12 @@ import ru.greenatom.demo.domain.User;
 import ru.greenatom.demo.domain.Views;
 import ru.greenatom.demo.domain.dto.ChangeAccessDto;
 import ru.greenatom.demo.domain.dto.CreatedDocumentDto;
+import ru.greenatom.demo.domain.dto.MessageDto;
 import ru.greenatom.demo.domain.dto.SavedDocumentDto;
 import ru.greenatom.demo.repo.*;
 import ru.greenatom.demo.service.DocumentService;
+import ru.greenatom.demo.service.mail.MailType;
+import ru.greenatom.demo.service.mail.NotificationMailSender;
 
 import javax.validation.Valid;
 import java.time.LocalDateTime;
@@ -39,13 +41,15 @@ public class DocumentController {
     private final ModelMapper modelMapper;
 
     private final DocumentRepo documentRepo;
-    private final DocumentService documentService;
     private final SecrecyLevelRepo secrecyLevelRepo;
     private final DocumentVersionRepo documentVersionRepo;
     private final DocumentHistoryRepo documentHistoryRepo;
     private final DocumentTypeRepo documentTypeRepo;
     private final UserRepo userRepo;
     private final DocumentAccessRepo documentAccessRepo;
+
+    private final DocumentService documentService;
+    private final NotificationMailSender mailSender;
 
     Logger logger = LoggerFactory.getLogger(DocumentController.class);
 
@@ -54,7 +58,12 @@ public class DocumentController {
                               DocumentService documentService,
                               SecrecyLevelRepo secrecyLevelRepo,
                               DocumentVersionRepo documentVersionRepo,
-                              DocumentHistoryRepo documentHistoryRepo, DocumentTypeRepo documentTypeRepo, UserRepo userRepo, DocumentAccessRepo documentAccessRepo) {
+                              DocumentHistoryRepo documentHistoryRepo,
+                              DocumentTypeRepo documentTypeRepo,
+                              UserRepo userRepo,
+                              DocumentAccessRepo documentAccessRepo,
+                              NotificationMailSender mailSender
+    ) {
         this.modelMapper = modelMapper;
         this.documentRepo = documentRepo;
         this.documentService = documentService;
@@ -64,6 +73,7 @@ public class DocumentController {
         this.documentTypeRepo = documentTypeRepo;
         this.userRepo = userRepo;
         this.documentAccessRepo = documentAccessRepo;
+        this.mailSender = mailSender;
     }
 
     /**
@@ -76,18 +86,26 @@ public class DocumentController {
             @RequestBody @Valid CreatedDocumentDto createdDocumentDto,
             BindingResult bindingResult, Authentication user
     ) {
+        User userAuth = (User) user.getPrincipal();
+
         Map<String, Object> strings = new HashMap<>();
         logger.info("documentBuildingCreateModel собрана:" + !bindingResult.hasErrors());
         if (bindingResult.hasErrors()) {
-            List<String> errors = new ArrayList<String>();
+            List<String> errors = new ArrayList<>();
             bindingResult.getAllErrors().forEach(e -> {
                 logger.error("Error сборки documentBuildingCreateModel:" + e.getDefaultMessage());
                 errors.add(e.getDefaultMessage());
             });
             strings.put("error", errors);
         } else {
-            strings.put("id", this.documentService.create(createdDocumentDto, (User) user.getPrincipal()).getDocumentId());
+            strings.put("id", this.documentService.create(createdDocumentDto, userAuth).getDocumentId());
+
+            // Sending a notification
+            String message = String.format("You have successfully created a document with name %s and type %s",
+                    createdDocumentDto.getDocumentName(), createdDocumentDto.getDocumentType());
+            mailSender.sendEmail(userAuth, userAuth, "Document created", message, MailType.DOCUMENT_CREATED);
         }
+
         return strings;
     }
 
@@ -101,7 +119,7 @@ public class DocumentController {
         document.setDocumentName("name");
         document.setPassword("name");
 
-        //   document.setAccessTypes(     Collections.singleton(Action.SAVE));
+        //   document.setAccessTypes(Collections.singleton(Action.SAVE));
 
         SecrecyLevel secrecyLevel = new SecrecyLevel();
         secrecyLevel.setSecrecyName("SecrecyName");
@@ -121,7 +139,7 @@ public class DocumentController {
         return document;
     }
 
-    @GetMapping("/{documentId}")
+    @DeleteMapping("/{documentId}")
     @ResponseBody
     public long getDocumentDelete(@PathVariable String documentId) {
         return documentService.delete(Long.parseLong(documentId)).getDocumentId();
@@ -141,7 +159,7 @@ public class DocumentController {
     ) {
         Map<String, Object> strings = new HashMap<>();
         if (bindingResult.hasErrors()) {
-            List<String> errors = new ArrayList<String>();
+            List<String> errors = new ArrayList<>();
 
             bindingResult.getAllErrors().forEach(e -> {
                 logger.error("Error сборки DocumentBuildingSaveModel:" + e.getDefaultMessage());
@@ -164,7 +182,7 @@ public class DocumentController {
      * @param userAuth        which giving access to the document
      * @param changeAccessDto dto access
      */
-    @PutMapping("/d/{idDocument}")
+    @PutMapping("/documents/{idDocument}")
     @ResponseBody
     public void changeAccess(
             @PathVariable Long idDocument,
@@ -185,7 +203,33 @@ public class DocumentController {
                 documentAccess.setUser(userRepo.findByUserId(changeAccessDto.getUserToChangeId()));
                 documentAccess.setAccessTypes(Collections.singleton(changeAccessDto.getAction()));
                 documentAccessRepo.save(documentAccess);
+
+                // Sending a notification:
+                String message = String.format("User %s %s granted you an access for this document:\n%s",
+                        user.getName(), user.getSurname(), documentAccess.getDocument().getDocumentName());
+
+                mailSender.sendEmail(user, userToChange, "Access granted", message, MailType.ACCESS_GRANTED);
             }
         }
+    }
+
+    /**
+     * @param documentId      document id
+     * @param userAuth        which sending message to the document's author
+     * @param messageDto      contains message and document information
+     */
+    @PutMapping("/documents/{documentId}/message")
+    @ResponseBody
+    public void sendMessage(
+            @PathVariable Long documentId,
+            Authentication userAuth,
+            @RequestBody MessageDto messageDto
+    ) {
+        User user = (User) userAuth.getPrincipal();
+
+        User documentAuthor = userRepo.findByUserId(messageDto.getUserId());
+        String subject = String.format("Message from %s %s", user.getName(), user.getSurname());
+
+        mailSender.sendEmail(user, documentAuthor, subject, messageDto.getMessage(), MailType.MESSAGE);
     }
 }

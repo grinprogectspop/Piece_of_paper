@@ -6,29 +6,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import ru.greenatom.demo.domain.Action;
-import ru.greenatom.demo.domain.Document;
-import ru.greenatom.demo.domain.DocumentAccess;
-import ru.greenatom.demo.domain.DocumentType;
-import ru.greenatom.demo.domain.SecrecyLevel;
-import ru.greenatom.demo.domain.User;
-import ru.greenatom.demo.domain.Views;
+import ru.greenatom.demo.domain.*;
+import ru.greenatom.demo.domain.dto.CatalogDto;
 import ru.greenatom.demo.domain.dto.ChangeAccessDto;
 import ru.greenatom.demo.domain.dto.CreatedDocumentDto;
 import ru.greenatom.demo.domain.dto.SavedDocumentDto;
 import ru.greenatom.demo.repo.*;
+import ru.greenatom.demo.service.CatalogService;
 import ru.greenatom.demo.service.DocumentService;
 
 import javax.validation.Valid;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * TODO
@@ -46,6 +37,8 @@ public class DocumentController {
     private final DocumentTypeRepo documentTypeRepo;
     private final UserRepo userRepo;
     private final DocumentAccessRepo documentAccessRepo;
+    private final CatalogRepo catalogRepo;
+    private final CatalogService catalogService;
 
     Logger logger = LoggerFactory.getLogger(DocumentController.class);
 
@@ -54,7 +47,12 @@ public class DocumentController {
                               DocumentService documentService,
                               SecrecyLevelRepo secrecyLevelRepo,
                               DocumentVersionRepo documentVersionRepo,
-                              DocumentHistoryRepo documentHistoryRepo, DocumentTypeRepo documentTypeRepo, UserRepo userRepo, DocumentAccessRepo documentAccessRepo) {
+                              DocumentHistoryRepo documentHistoryRepo,
+                              DocumentTypeRepo documentTypeRepo,
+                              UserRepo userRepo,
+                              DocumentAccessRepo documentAccessRepo,
+                              CatalogRepo catalogRepo,
+                              CatalogService catalogService) {
         this.modelMapper = modelMapper;
         this.documentRepo = documentRepo;
         this.documentService = documentService;
@@ -64,6 +62,8 @@ public class DocumentController {
         this.documentTypeRepo = documentTypeRepo;
         this.userRepo = userRepo;
         this.documentAccessRepo = documentAccessRepo;
+        this.catalogRepo = catalogRepo;
+        this.catalogService = catalogService;
     }
 
     /**
@@ -86,6 +86,14 @@ public class DocumentController {
             });
             strings.put("error", errors);
         } else {
+            Set<Catalog> catalogs = createdDocumentDto.getCatalogs();
+            for(Catalog catalog : catalogs){
+                if(this.catalogRepo.findByCatalogName(catalog.getCatalogName()) == null) {
+                  CatalogDto createdCatalogDto = new CatalogDto();
+                  createdCatalogDto.setCatalogName(catalog.getCatalogName());
+                  this.catalogService.create(createdCatalogDto);
+                }
+            }
             strings.put("id", this.documentService.create(createdDocumentDto, (User) user.getPrincipal()).getDocumentId());
         }
         return strings;

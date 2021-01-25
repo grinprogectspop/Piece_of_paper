@@ -1,0 +1,20 @@
+version: '3.3'
+services:
+  app:
+    container_name: pop-app
+    image: mercurialously/pop_app:0.0.1
+    build: ./
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgresqldb
+  postgresqldb:
+    container_name: pop-db
+    image: postgres
+    ports:
+      - "5432:5432"
+    restart: always
+    environment:
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_USER=root
+      - POSTGRES_DB=pop

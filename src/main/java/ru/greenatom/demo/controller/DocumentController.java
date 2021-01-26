@@ -9,13 +9,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import ru.greenatom.demo.domain.Action;
-import ru.greenatom.demo.domain.Document;
-import ru.greenatom.demo.domain.DocumentAccess;
-import ru.greenatom.demo.domain.DocumentType;
-import ru.greenatom.demo.domain.SecrecyLevel;
-import ru.greenatom.demo.domain.User;
-import ru.greenatom.demo.domain.Views;
+import ru.greenatom.demo.domain.*;
 import ru.greenatom.demo.domain.dto.ChangeAccessDto;
 import ru.greenatom.demo.domain.dto.CreatedDocumentDto;
 import ru.greenatom.demo.domain.dto.SavedDocumentDto;
@@ -121,7 +115,7 @@ public class DocumentController {
         return document;
     }
 
-    @GetMapping("/{documentId}")
+    @DeleteMapping("/{documentId}")
     @ResponseBody
     public long getDocumentDelete(@PathVariable String documentId) {
         return documentService.delete(Long.parseLong(documentId)).getDocumentId();
@@ -157,6 +151,15 @@ public class DocumentController {
         }
 
         return strings;
+    }
+
+    @GetMapping("/{documentId}/{versionName}")
+    public DocumentVersion getDocumentByVersion(
+            @PathVariable Long documentId,
+            @PathVariable String versionName
+    ) {
+        Document doc = documentRepo.findByDocumentId(documentId);
+        return documentVersionRepo.findByVersionNameAndDocument(versionName, doc);
     }
 
     /**

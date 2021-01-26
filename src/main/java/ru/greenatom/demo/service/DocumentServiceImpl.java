@@ -20,26 +20,26 @@ public class DocumentServiceImpl implements DocumentService {
     private final DocumentRepo documentRepo;
     private final SecrecyLevelRepo secrecyLevelRepo;
     private final DocumentTypeRepo documentTypeRepo;
-    private final DocumentVersionRepo documentVersionRepo;
     private final DocumentHistoryRepo documentHistoryRepo;
     private final UserRepo userRepo;
+
+    private final VersionService versionService;
 
     public DocumentServiceImpl(
             ModelMapper modelMapper,
             DocumentRepo documentRepo,
             SecrecyLevelRepo secrecyLevelRepo,
             DocumentTypeRepo documentTypeRepo,
-            DocumentVersionRepo documentVersionRepo,
             DocumentHistoryRepo documentHistoryRepo,
-            UserRepo userRepo
-    ) {
+            UserRepo userRepo,
+            VersionService versionService) {
         this.modelMapper = modelMapper;
         this.documentRepo = documentRepo;
         this.secrecyLevelRepo = secrecyLevelRepo;
         this.documentTypeRepo = documentTypeRepo;
-        this.documentVersionRepo = documentVersionRepo;
         this.documentHistoryRepo = documentHistoryRepo;
         this.userRepo = userRepo;
+        this.versionService = versionService;
     }
 
     @Override
@@ -67,24 +67,23 @@ public class DocumentServiceImpl implements DocumentService {
         documentHistory.setActions(Set.of(Action.READ, Action.SAVE,Action.CREATE));
         documentHistory.setActionDate(LocalDateTime.now());
         documentHistory.setAuthor(principal);
-        documentHistory.setDescription("setDescription");
+        documentHistory.setDescription("No description");
         createdDocument.setChanges(Collections.singleton(documentHistory));
 
         // DocumentVersion
         DocumentVersion documentVersion = new DocumentVersion();
         documentVersion.setDocument(createdDocument);
-        documentVersion.setUrl("URL1");
+        documentVersion.setUrl(createdDocumentDto.getUrl());
         documentVersion.setDate(LocalDateTime.now());
-        documentVersion.setVersionName("0.0.1");
+        documentVersion.setVersionName("0.0.0.1");
         createdDocument.setVersions(Collections.singleton(documentVersion));
 
         // DocumentVersion & DocumentHistory
         documentVersion.setDocumentChanges(Collections.singleton(documentHistory));
         documentHistory.setDocumentVersion(documentVersion);
 
-        // Changes saving
+        // Saving changes
         documentRepo.save(createdDocument);
-
 
         return createdDocument;
     }
@@ -103,16 +102,13 @@ public class DocumentServiceImpl implements DocumentService {
         documentHistory.setDocumentVersion(savedDocumentDto.getVersionEdit());
 
         // DocumentVersion
-        DocumentVersion documentVersion = savedDocumentDto.getVersionEdit();
-        documentVersion.setDocument(savedDocument);
-        documentVersion.setDate(LocalDateTime.now());
-        documentVersion.setUrl("URL2");
-        documentVersion.setDocumentChanges(savedDocument.getChanges());
-        documentVersion.getDocumentChanges().add(documentHistory);
-        documentHistory.setDocumentVersion(documentVersion);
+        DocumentVersion version = versionService.saveVersion(
+                savedDocumentDto.getVersionEdit(), savedDocument, documentHistory);
+
+        documentHistory.setDocumentVersion(version);
 
         savedDocument.getChanges().add(documentHistory);
-        savedDocument.getVersions().add(documentVersion);
+        savedDocument.getVersions().add(version);
         savedDocument.setPassword(savedDocumentDto.getPassword());
 
         documentRepo.save(savedDocument);
